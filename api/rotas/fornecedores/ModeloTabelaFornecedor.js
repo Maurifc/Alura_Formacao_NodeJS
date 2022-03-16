@@ -2,28 +2,29 @@
 const Sequelize = require('sequelize')
 const instancia = require('../../banco-de-dados')
 
+// Fields
 const colunas = {
-    empresa: {
+    empresa: { // empresa - string - not null
         type: Sequelize.STRING,
         allowNull: false
     },
-    email: {
+    email: { // email - string - not null
         type: Sequelize.STRING,
         allowNull: false
     },
-    categoria: {
+    categoria: { // empresa - enum (0 = racao, 1 = brinquedos) - not null
         type: Sequelize.ENUM('ração', 'brinquedos'),
         allowNull: false
     }
 }
 
 const opcoes = {
-    freezeTableName: true,
+    freezeTableName: true, // ?
     tableName: 'fornecedores',
     timestamps: true,
-    createdAt: 'dataCriacao',
-    updatedAt: 'dataAtualizacao',
-    version: 'versao'
+    createdAt: 'dataCriacao', // Rename createdAt to dataCriacao
+    updatedAt: 'dataAtualizacao', // Rename updatedAt to dataAtualizacao
+    version: 'versao' // Rename version field
 }
 
 // Export a database instance properly setup with columns and options

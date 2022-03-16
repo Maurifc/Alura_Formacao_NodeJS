@@ -2,6 +2,6 @@
 const Modelo = require('./ModeloTabelaFornecedor')
 module.exports = {
     listar (){
-        return Modelo.findAll()
+        return Modelo.findAll() // Returns all rows in table fornecedores
     }
 }

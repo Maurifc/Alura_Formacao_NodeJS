@@ -1,3 +1,4 @@
+// Configures and export a database instance
 const Sequelize = require('sequelize')
 const config = require('config')
 
