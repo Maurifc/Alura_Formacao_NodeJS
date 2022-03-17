@@ -11,7 +11,7 @@ roteador.get('/', async (req, res) => {
     )
 })
 
-roteador.post('/', async (req, res) => {
+roteador.post('/', async (req, res, next) => {
     try {
         const dadosRecebidos = req.body
         const fornecedores = new Fornecedor(dadosRecebidos)
@@ -21,15 +21,12 @@ roteador.post('/', async (req, res) => {
         res.status(201)
         res.send(JSON.stringify(fornecedores))        
     } catch (error) {
-        res.status(400)
-        res.send(JSON.stringify({
-            mensagem: error.message
-        }))        
+        next(error)      
     }
 } )
 
 
-roteador.get('/:idFornecedor', async (req, res) => {
+roteador.get('/:idFornecedor', async (req, res, next) => {
     try {
         const id = req.params.idFornecedor
         const fornecedor = new Fornecedor({ id: id })
@@ -38,14 +35,11 @@ roteador.get('/:idFornecedor', async (req, res) => {
         res.status(200)
         res.send(JSON.stringify(fornecedor))
     } catch (error) {
-        res.status(404)
-        res.send(JSON.stringify({
-            mensagem: error.message
-        }))    
+        next(error)
     }
 })
 
-roteador.put('/:idFornecedor', async (req, res) => {
+roteador.put('/:idFornecedor', async (req, res, next) => {
     try {
         const id = req.params.idFornecedor
         const dadosRecebidos = req.body
@@ -56,14 +50,11 @@ roteador.put('/:idFornecedor', async (req, res) => {
         res.status(204)
         res.end()        
     } catch (error) {
-        res.status(400)
-        res.send(JSON.stringify({
-            mensagem: error.message
-        }))
+       next(error)
     }
 })
 
-roteador.delete('/:idFornecedor', async (req, res) => {
+roteador.delete('/:idFornecedor', async (req, res, next) => {
     try {
         const id = req.params.idFornecedor
         const fornecedor = new Fornecedor({id})
@@ -73,10 +64,7 @@ roteador.delete('/:idFornecedor', async (req, res) => {
         res.status(204)
         res.end()
     } catch (error) {
-        res.status(404)
-        res.send(JSON.stringify({
-            messagem: error.message
-        }))
+        next(error)
     }
 })
 
