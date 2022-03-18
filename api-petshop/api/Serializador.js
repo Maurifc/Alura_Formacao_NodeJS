@@ -45,6 +45,14 @@ class SerializadorFornecedor extends Serializador{
     }
 }
 
+class SerializadorUsuario extends Serializador{
+    constructor(contentType){
+        super()
+        this.contentType = contentType
+        this.camposPublicos = ['id', 'nome']
+    }
+}
+
 module.exports = {
     Serializador: Serializador,
     SerializadorFornecedor: SerializadorFornecedor,
