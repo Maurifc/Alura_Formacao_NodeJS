@@ -6,14 +6,34 @@ const NaoEncontrado = require('./erros/NaoEncontrado')
 const CampoInvalido = require('./erros/CampoInvalido')
 const DadosNaoFornecidos = require('./erros/DadosNaoFornecidos')
 const ValorNaoSuportado = require('./erros/ValorNaoSuportado')
+const formatosAceitos = require('./Serializador').formatosAceitos
 const app = express()
 
 app.use(bodyParser.json()) //  "Express Plugin"
 
+// Entrypoint Middleware - Check if ContentType is supported
+app.use((req, res, next) => {
+    let formatoRequisitado = req.header('Accept') // Get ContentType from header
+
+    // Set json as default contentType
+    if(formatoRequisitado === '*/*')
+        formatoRequisitado = 'application/json'
+
+    // -1 = not found
+    if(formatosAceitos.indexOf(formatoRequisitado) == -1){
+        res.status(406)
+        res.end()
+        return        
+    }
+    
+    res.setHeader('Content-Type', formatoRequisitado)
+    next()
+})
+
 // Declare a route and specify a router for it
 app.use('/api/fornecedores', roteador)
 
-//Middleware to handle errors
+// Out Middleware - Handle errors
 app.use((error, req, res, next) => {
     let status = 500
     if(error instanceof NaoEncontrado)

@@ -1,13 +1,19 @@
 const roteador = require('express').Router()
 const TabelaFornecedor = require('./TabelaFornecedor') // Syntax sugar to ORM methods
 const Fornecedor = require('./Fornecedor')
+const SerializadorFornecedor = require('../../Serializador').SerializadorFornecedor
 
 // Route /api/fornecedores
 roteador.get('/', async (req, res) => {
     const resultados = await TabelaFornecedor.listar() // Same as model.findAll()
     res.status(200)
+
+    const serializador = new SerializadorFornecedor(
+        res.getHeader('Content-Type') // This was set on entrypoint middleware
+    )
+
     res.send(
-        JSON.stringify(resultados) // Turn list into json
+        serializador.serializar(resultados)
     )
 })
 
@@ -19,7 +25,13 @@ roteador.post('/', async (req, res, next) => {
         await fornecedores.criar()
     
         res.status(201)
-        res.send(JSON.stringify(fornecedores))        
+        const serializador = new SerializadorFornecedor(
+            res.getHeader('Content-Type') // This was set on entrypoint middleware
+        )
+    
+        res.send(
+            serializador.serializar(fornecedores)
+        )
     } catch (error) {
         next(error)      
     }
@@ -33,7 +45,13 @@ roteador.get('/:idFornecedor', async (req, res, next) => {
         await fornecedor.carregar()
     
         res.status(200)
-        res.send(JSON.stringify(fornecedor))
+        const serializador = new SerializadorFornecedor(
+            res.getHeader('Content-Type') // This was set on entrypoint middleware
+        )
+    
+        res.send(
+            serializador.serializar(fornecedor)
+        )
     } catch (error) {
         next(error)
     }
