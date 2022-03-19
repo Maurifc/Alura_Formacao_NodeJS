@@ -5,6 +5,7 @@ const { InvalidArgumentError } = require('../erros')
 const bcrypt = require('bcrypt')
 const Usuario = require('./usuarios-modelo')
 const jwt = require('jsonwebtoken')
+const blacklist = require('../../redis/manipula-blacklist')
 
 function verificaUsuario(usuario){
     if(!usuario)
@@ -17,6 +18,13 @@ async function verificaSenha(senha, senhaHash){
     if(!senhaValida)
         throw new InvalidArgumentError('E-mail ou senha inválidos')
 
+}
+
+async function verificaTokenNaBlacklist(token){
+    const tokenNaBlacklist = await blacklist.contemToken(token)
+    
+    if (tokenNaBlacklist)
+        throw new jwt.JsonWebTokenError('Token inválido por logout!')
 }
 
 // Local strategy checks if username/email and passwords are valid
@@ -43,6 +51,9 @@ passport.use(
     new BearerStrategy(
         async (token, done) => {
             try {
+                // Check if user hasn't logged out with this token
+                await verificaTokenNaBlacklist(token)
+
                 const payload = jwt.verify(token, process.env.CHAVE_JWT) //get the payload, with usario.id though decode of JWT token
                 const usuario = await Usuario.buscaPorId(payload.id)
                 done(null, usuario, { token: token}) // Send token to next middleware-autenticacao -> authenticate
