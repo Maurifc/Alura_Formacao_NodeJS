@@ -37,6 +37,7 @@ module.exports = {
                 if(erro === null && usuario === false)
                     return res.status(401).json()
                 
+                req.token = info.token // Get token, sent by estrategia-autenticacao -> bearer, and add it to user request
                 req.user = usuario
                 return next()
             }

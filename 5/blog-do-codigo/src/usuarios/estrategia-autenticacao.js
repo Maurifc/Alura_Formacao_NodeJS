@@ -45,7 +45,7 @@ passport.use(
             try {
                 const payload = jwt.verify(token, process.env.CHAVE_JWT) //get the payload, with usario.id though decode of JWT token
                 const usuario = await Usuario.buscaPorId(payload.id)
-                done(null, usuario)                
+                done(null, usuario, { token: token}) // Send token to next middleware-autenticacao -> authenticate
             } catch (error) {
                 done(error)
             }

@@ -1,6 +1,7 @@
 const Usuario = require('./usuarios-modelo');
 const { InvalidArgumentError, InternalServerError } = require('../erros');
 const jwt = require('jsonwebtoken')
+const blacklist = require('../../redis/manipula-blacklist')
 
 function criaTokenJWT(usuario){
   const payload = {
@@ -44,6 +45,16 @@ module.exports = {
     const token = criaTokenJWT(req.user) // user was injected on request after run local strategy (passport)
     res.set('Authorization', token)
     res.status(204).send();
+  },
+
+  logout: async (req, res) => {
+    try {
+      const token = req.token // token was injected by middlewares-autenticacao -> bearer
+      await blacklist.adiciona(token)
+      res.status(204).send()      
+    } catch (error) {
+      res.status(500).json( { erro: message} )
+    }
   },
 
   lista: async (req, res) => {
