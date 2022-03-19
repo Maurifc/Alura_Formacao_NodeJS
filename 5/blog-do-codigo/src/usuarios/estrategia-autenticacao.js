@@ -12,13 +12,15 @@ function verificaUsuario(usuario){
 }
 
 async function verificaSenha(senha, senhaHash){
-    const senhaValida = await bcrypt.compare(senha, senhaHash)
+    const senhaValida = await bcrypt.compare(senha, senhaHash) // Check if password and hash matches
 
     if(!senhaValida)
         throw new InvalidArgumentError('E-mail ou senha inválidos')
 
 }
 
+// Local strategy checks if username/email and passwords are valid
+// When everything is OK, passport inject usuario on request object
 passport.use(
     new LocalStrategy({
         usernameField: 'email',
@@ -27,20 +29,21 @@ passport.use(
     }, async (email, senha, done) => {
         try {
             const usuario = await Usuario.buscaPorEmail(email)
-            verificaUsuario(usuario)   
+            verificaUsuario(usuario)  // Check if user exists 
             await verificaSenha(senha, usuario.senhaHash)
-            done(null, usuario)
+            done(null, usuario) // Injects usuario on request object
         } catch (error) {
             done(error)
         }
     })
 )
 
+// Bearer Strategy check if token sent on request is valid (for auth)
 passport.use(
     new BearerStrategy(
         async (token, done) => {
             try {
-                const payload = jwt.verify(token, process.env.CHAVE_JWT)
+                const payload = jwt.verify(token, process.env.CHAVE_JWT) //get the payload, with usario.id though decode of JWT token
                 const usuario = await Usuario.buscaPorId(payload.id)
                 done(null, usuario)                
             } catch (error) {

@@ -38,9 +38,9 @@ module.exports = {
     }
   },
 
-  // Create JTW token and set through Authorization header
+  // Creates JTW token and send it through Authorization header
   login: (req, res) => {
-    const token = criaTokenJWT(req.user)
+    const token = criaTokenJWT(req.user) // user was injected on request after run local strategy (passport)
     res.set('Authorization', token)
     res.status(204).send();
   },
