@@ -9,7 +9,8 @@ function criaTokenJWT(usuario){
 
   // Signs payload with a secret loaded from .env file
   const secret = process.env.CHAVE_JWT
-  const token = jwt.sign(payload, secret);
+  const expiracao = { expiresIn: '15m' }
+  const token = jwt.sign(payload, secret, expiracao);
   return token;
 }
 
