@@ -1,4 +1,12 @@
 import express from "express"
+import db from "./config/dbConnect.js"
+import livros from "./models/Livro.js"
+
+// MongoDB
+db.on("error", console.log.bind(console, "Erro de conexão"))
+db.once("open", () => {
+    console.log('Conexão com o banco realizada com sucesso!');
+})
 
 const app = express()
 
@@ -9,17 +17,20 @@ function buscaLivros(id){
         return livro.id == id
     })
 }
-const livros = [
-    {id: 1, titulo: "Senhos dos anéis"},
-    {id: 2, titulo: "O hobbit"}
-]
+
+// const livros = [
+//     {id: 1, titulo: "Senhos dos anéis"},
+//     {id: 2, titulo: "O hobbit"}
+// ]
 
 app.get('/', (req, res) => {
     res.status(200).send('Curso de node')
 })
 
 app.get('/livros', (req, res) => {
-    res.status(200).json(livros)
+   livros.find((err, livros) => {
+        res.status(200).send(livros)
+    })
 })
 
 app.get('/livros/:id', (req, res) => {
