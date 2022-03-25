@@ -2,7 +2,7 @@ import express from "express"
 import livros from "./livrosRoutes.js"
 import autores from "./autoresRoutes.js"
 
-const routes = (app) => {
+export default function routes(app) {
     app.route('/').get((req, res) => {
         res.status(200).send('Curso de node')
     })
@@ -13,5 +13,3 @@ const routes = (app) => {
         autores
     )
 }
-
-export default routes
