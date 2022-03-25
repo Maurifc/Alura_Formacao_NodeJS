@@ -52,6 +52,14 @@ class LivroController{
             res.send({ message: 'Livro excluído com sucesso!'})
         })
     }
+
+    static listarLivroPorEditora = (req, res) => {
+        const editora = req.query.editora
+
+        livros.find({ editora: editora}, {}, (err, livros) => {
+            res.send(livros)
+        })
+    }
     
 }
 
