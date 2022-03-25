@@ -2,18 +2,24 @@ import livros from "../models/Livro.js"
 
 class LivroController{
     static listarLivros = (req , res) => {
-        livros.find((err, livros) => {
-            res.status(200).send(livros)
-        })
+        livros.find()
+            .populate('autor') // Injects autor on livro
+            .exec((err, livros) => {
+                res.status(200).send(livros)
+            }
+        )
     }
 
     static listarLivroPorId = (req, res) => {
-        let livro = livros.findById(req.params.id, (err, livros) => {
-            if(err)
-                return res.status(400).send({ message: 'Falha ao recuperar livro: ' + err.message})
+        let livro = livros.findById(req.params.id)
+            .populate('autor', 'nome')
+            .exec((err, livros) => {
+                if(err)
+                    return res.status(400).send({ message: 'Falha ao recuperar livro: ' + err.message})
 
-            res.send(livros)          
-        })
+                res.send(livros)          
+            }
+        )
 
     }
 
