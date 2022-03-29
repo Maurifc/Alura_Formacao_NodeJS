@@ -1,6 +1,6 @@
 const { promisify } = require('util')
 
-module.exports = lista => { // Lista is the function argument
+module.exports = lista => { // Lista is the function argument (Redis Client)
     const setAsync = promisify(lista.set).bind(lista)
     const existsAsync = promisify(lista.exists).bind(lista)
     const getAsync = promisify(lista.get).bind(lista)

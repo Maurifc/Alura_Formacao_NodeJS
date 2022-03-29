@@ -4,7 +4,7 @@ const Usuario = require('./usuarios-modelo');
 const { InvalidArgumentError } = require('../erros');
 
 const jwt = require('jsonwebtoken');
-const blocklist = require('../../redis/manipula-blocklist');
+const blocklist = require('../../redis/blocklist-access-token')
 const allowListRefreshToken = require('../../redis/allowlist-refresh-token');
 
 function criaTokenJWT(usuario) {
