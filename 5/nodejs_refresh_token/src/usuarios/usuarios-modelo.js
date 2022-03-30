@@ -18,6 +18,9 @@ class Usuario {
     }
 
     await usuariosDao.adiciona(this);
+    
+    const usuario = await usuariosDao.buscaPorEmail(this.email)
+    this.id = usuario.id
   }
 
   async adicionaSenha(senha) {
