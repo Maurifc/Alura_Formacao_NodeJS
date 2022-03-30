@@ -1,28 +1,10 @@
-const crypto = require("crypto");
-const moment = require("moment");
 const Usuario = require("./usuarios-modelo");
 const { InvalidArgumentError } = require("../erros");
+const tokens = require('./token')
 
-const jwt = require("jsonwebtoken");
 const blocklist = require("../../redis/blocklist-access-token");
-const allowListRefreshToken = require("../../redis/allowlist-refresh-token");
+const token = require("./token");
 
-function criaTokenJWT(usuario) {
-  const payload = {
-    id: usuario.id,
-  };
-
-  const token = jwt.sign(payload, process.env.CHAVE_JWT, { expiresIn: "15m" });
-  return token;
-}
-
-// Create a refresh token
-async function criaTokenOpaco(usuario) {
-  const tokenOpaco = crypto.randomBytes(24).toString("hex");                    // Generates 24 random bytes in hex format
-  const dataExpiracao = moment().add(5, "d").unix();                            // expirationDate = Current datetime + 5 days (then convert to unix timestamp)
-  await allowListRefreshToken.adiciona(tokenOpaco, usuario.id, dataExpiracao);  // Adds the new token to allowlist, otherwise it will not work
-  return tokenOpaco;
-}
 
 module.exports = {
   async adiciona(req, res) {
@@ -47,10 +29,10 @@ module.exports = {
 
   async login(req, res) {
     try {
-      const accessToken = criaTokenJWT(req.user);
-      const refreshToken = await criaTokenOpaco(req.user);    // When user logins, create a refresh token to renew the access token
-      res.set("Authorization", accessToken);                  // Access token is set on 'Authorization' response header...
-      res.status(200).json({ refreshToken });                 // ... while refresh token is put on request body
+      const accessToken = token.access.cria(req.user.id)
+      const refreshToken = await token.refresh.cria(req.user.id);     // When user logins, create a refresh token to renew the access token
+      res.set("Authorization", accessToken);                          // Access token is set on 'Authorization' response header...
+      res.status(200).json({ refreshToken });                         // ... while refresh token is put on request body
     } catch (erro) {
       res.status(500).json({ erro: erro.message });
     }
