@@ -1,20 +1,7 @@
 const passport = require('passport');
-const { InvalidArgumentError } = require('../erros')
 const allowlistRefreshToken = require('../../redis/allowlist-refresh-token')
 const Usuario = require('./usuarios-modelo')
-
-async function verificarRefreshToken(refreshToken){
-  if(!refreshToken)
-    throw new InvalidArgumentError('Refresh token não enviado!')
-  
-  const id = await allowlistRefreshToken.buscaValor(refreshToken)     // Get user id from refresh token (key)
-  
-  if(!id){                                                            // Check if refresh token is valid (key returned a valid user id)
-    throw new InvalidArgumentError('Refresh token inválido')
-  }
-
-  return id
-}
+const tokens = require('./token')
 
 async function invalidaRefreshToken(refreshToken){
   if(!refreshToken)
@@ -80,7 +67,7 @@ module.exports = {
   async refresh(req, res, next) {
     try {
       const { refreshToken } = req.body                         // Get refresh token sent through body
-      const id = await verificarRefreshToken(refreshToken)      // Check if is valid and returns user id
+      const id = await tokens.refresh.verifica(refreshToken)      // Check if is valid and returns user id
       invalidaRefreshToken(refreshToken)                        // Prevent token use another time
       req.user = await Usuario.buscaPorId(id)                   // Inject user object on request
       return next()      
