@@ -41,21 +41,23 @@ async function criaTokenOpaco(id, [tempoQuantidade, tempoUnidade], allowlist) {
 }
 
 async function verificaTokenOpaco(token, nome, allowlist){
-  verificaTokenEnviado(token, nome);
+  verificaTokenEnviado(token, nome);               // Check if refresh token was sent on request
   
   const id = await allowlist.buscaValor(token)     // Get user id from refresh token (key)
   
-  verificaTokenValido(id, nome);
+  verificaTokenValido(id, nome);                   // Check if user was, really, retrieved from refresh token
 
   return id
 }
 
+// Check if refresh token is valid (key returned a valid user id)
 function verificaTokenValido(id, nome) {
-  if (!id) { // Check if refresh token is valid (key returned a valid user id)
+  if (!id) {
     throw new InvalidArgumentError(`${nome} inválido`, nome);
   }
 }
 
+// Check if refresh token was sent on request
 function verificaTokenEnviado(token, nome) {
   if (!token)
     throw new InvalidArgumentError(`${nome} não enviado!`, nome);
@@ -65,17 +67,26 @@ async function invalidaTokenOpaco(token, allowlist){
   await allowlist.deleta(token)
 }
 
+// Export Token functions
 module.exports = {
+    // Access token related functions
     access: {
+        // Some attributes
         nome: 'access token',
         lista: blocklistAccessToken,
         expiracao: [15, 'm'],
+
+        // Create a JWT Token (user login / token refreshing)
         cria(id){
             return criaTokenJWT(id, this.expiracao);
         },
+
+        // Check if JWT Token is valid ( authorization )
         verifica(token){
           return verificaTokenJWT(token, this.nome, this.lista)
         },
+
+        // Invalidate token ( when user logs out)
         invalida(token){
           return invalidaTokenJWT(token, this.lista)
         }
