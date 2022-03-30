@@ -28,6 +28,9 @@ if (tokenNaBlocklist) {
 }
 }
 
+function invalidaTokenJWT(token, blocklist){
+  return blocklist.adiciona(token);
+}
   
 // Create a refresh token
 async function criaTokenOpaco(id, [tempoQuantidade, tempoUnidade], allowlist) {
@@ -58,6 +61,10 @@ function verificaTokenEnviado(token, nome) {
     throw new InvalidArgumentError(`${nome} não enviado!`, nome);
 }
 
+async function invalidaTokenOpaco(token, allowlist){
+  await allowlist.deleta(token)
+}
+
 module.exports = {
     access: {
         nome: 'access token',
@@ -68,6 +75,9 @@ module.exports = {
         },
         verifica(token){
           return verificaTokenJWT(token, this.nome, this.lista)
+        },
+        invalida(token){
+          return invalidaTokenJWT(token, this.lista)
         }
     },
 
@@ -80,6 +90,9 @@ module.exports = {
         },
         verifica(token){
           return verificaTokenOpaco(token, this.nome, this.lista)
+        },
+        invalida(token){
+          return invalidaTokenOpaco(token, this.lista)
         }
     }
 }
