@@ -1,8 +1,7 @@
 const Usuario = require("./usuarios-modelo");
 const { InvalidArgumentError } = require("../erros");
 const tokens = require('./token')
-
-const token = require("./token");
+const emails = require('./emails')
 
 
 module.exports = {
@@ -16,6 +15,9 @@ module.exports = {
       });
       await usuario.adicionaSenha(senha);
       await usuario.adiciona();
+      
+      emails.enviaEmail(usuario) // async
+        .catch(console.log)
 
       res.status(201).json();
     } catch (erro) {
@@ -28,8 +30,8 @@ module.exports = {
 
   async login(req, res) {
     try {
-      const accessToken = token.access.cria(req.user.id)
-      const refreshToken = await token.refresh.cria(req.user.id);     // When user logins, create a refresh token to renew the access token
+      const accessToken = tokens.access.cria(req.user.id)
+      const refreshToken = await tokens.refresh.cria(req.user.id);     // When user logins, create a refresh token to renew the access token
       res.set("Authorization", accessToken);                          // Access token is set on 'Authorization' response header...
       res.status(200).json({ refreshToken });                         // ... while refresh token is put on request body
     } catch (erro) {
