@@ -43,6 +43,19 @@ module.exports = {
     }
   },
 
+  async modificaEmailVerificado(usuario, emailVerificado){
+    try {
+      await dbRun(`UPDATE usuarios SET emailVerificado = ? WHERE id = ?`,
+        [
+          emailVerificado,
+          usuario.id
+        ]
+      )
+    } catch (error) {
+      throw new InternalServerError('Erro ao modificar o campo emailVerificado: ' + error.message)
+    }
+  },
+
   async deleta(usuario) {
     try {
       await dbRun(`DELETE FROM usuarios WHERE id = ?`, [usuario.id]);

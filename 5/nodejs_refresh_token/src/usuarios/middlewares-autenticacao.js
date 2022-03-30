@@ -69,5 +69,16 @@ module.exports = {
       
       return res.status(500).send({ erro: error.message})
     }
+  },
+
+  async verificacaoEmail(req, res, next){
+    try {
+      const id = req.params.id
+      const usuario = await Usuario.buscaPorId(id)
+      req.user = usuario
+      return next()
+    } catch (error) {
+      res.status(500).send({ message: error.message })
+    }
   }
 };
